@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-http="http://www.springframework.org/schema/integration/http"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
+	http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http-4.0.xsd
+	http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml-4.0.xsd
+	http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-4.0.xsd
+	">
+
+	<int-http:outbound-gateway id="bash-url"
+		request-channel="in" reply-channel="html" url="http://bash.im/abyssbest"
+		expected-response-type="java.lang.String" />
+
+	<int:inbound-channel-adapter id="in"
+		auto-startup="true" expression="''">
+		<int:poller max-messages-per-poll="1" fixed-rate="30000" />
+	</int:inbound-channel-adapter>
+
+
+	<int:inbound-channel-adapter id="delete"
+		auto-startup="true" expression="''">
+		<int:poller max-messages-per-poll="1" fixed-rate="3600000" />
+	</int:inbound-channel-adapter>
+
+	<int-jdbc:outbound-channel-adapter
+		id="delete" data-source="dataSource"
+		query="delete from quotes wher q_date &lt; {fn TIMESTAMPADD(SQL_TSI_WEEK, -1, CURRENT_TIMESTAMP)}" />
+
+	<int:channel id="html" />
+
+	<int:channel id="quotes" />
+
+	<int:channel id="quotes-unique">
+		<int:interceptors>
+			<int:wire-tap channel="loggingChannel1" />
+		</int:interceptors>
+	</int:channel>
+
+	<int:logging-channel-adapter id="loggingChannel1"
+		log-full-message="true" level="INFO" />
+
+	<int:chain input-channel="quotes" output-channel="quotes-unique">
+		<int:filter expression="headers[quoteId]!=''" />
+		<int:filter ref="dbFilter" />
+	</int:chain>
+
+	<int:chain input-channel="quotes-unique">
+		<int:header-enricher default-overwrite="true">
+			<int:header name="quoteDate"
+				expression="@htmlFormatter.parseDateTime(headers[quoteDate]).toDate()" />
+		</int:header-enricher>
+		<int-jdbc:outbound-channel-adapter
+			query="insert into quotes (id, q_date, text) values (:headers[quoteId], :headers[quoteDate], :payload)"
+			data-source="dataSource" />
+	</int:chain>
+
+	<int:splitter input-channel="html" output-channel="quotes"
+		ref="htmlSplitter" />
+
+	<bean id="htmlSplitter" class="com.kudrevatykh.integration.bash.HtmlTransformer">
+		<property name="quoteSelector" value="div.quote" />
+		<property name="bodySelector" value="div.text" />
+		<property name="dateSelector" value="div.actions > span.date" />
+		<property name="idSelector" value="div.actions > span.id" />
+	</bean>
+
+
+	<bean id="dbFilter" class="com.kudrevatykh.integration.bash.DbFilter">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlQuery" value="select count(0) from quotes where id = ?" />
+	</bean>
+
+</beans>
