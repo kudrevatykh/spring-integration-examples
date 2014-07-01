@@ -18,7 +18,7 @@
 
 	<int:inbound-channel-adapter id="in"
 		auto-startup="true" expression="''">
-		<int:poller max-messages-per-poll="1" fixed-rate="30000" />
+		<int:poller max-messages-per-poll="1" fixed-rate="1200000" />
 	</int:inbound-channel-adapter>
 
 
