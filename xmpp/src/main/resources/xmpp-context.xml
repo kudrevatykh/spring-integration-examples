@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-xmpp="http://www.springframework.org/schema/integration/xmpp"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
+	http://www.springframework.org/schema/integration/xmpp http://www.springframework.org/schema/integration/xmpp/spring-integration-xmpp-4.0.xsd
+	">
+	
+	<int:logging-channel-adapter id="loggingChannel1" log-full-message="true" level="INFO" />
+	
+	<int:wire-tap channel="loggingChannel1" />
+	
+	<int-xmpp:xmpp-connection user="${server1.user}" password="${server1.pass}" host="${server1.host}" id="server1.conn" resource="proxy" />
+	
+	<int-xmpp:inbound-channel-adapter channel="server1" xmpp-connection="server1.conn" />
+	
+	<int:bridge input-channel="server1" output-channel="input" />
+	
+	
+	<int-xmpp:inbound-channel-adapter channel="server2" xmpp-connection="server2.conn" />
+	
+	<int:bridge input-channel="server2" output-channel="input" />
+	
+	
+	<int:channel id="out" />
+	
+	<int:chain input-channel="input" output-channel="out">
+		<int:transformer
+		expression="'Message from '+headers[xmpp_from] + ' to ' + headers[xmpp_to] + ':&#x0a;' + payload" />
+		<int:header-enricher default-overwrite="true">
+			<int:header name="xmpp_to" value="${xmpp.sendto}" />
+		</int:header-enricher>
+	</int:chain>
+
+	<int-xmpp:outbound-channel-adapter channel="out" xmpp-connection="server1.conn" />
+	
+</beans>
