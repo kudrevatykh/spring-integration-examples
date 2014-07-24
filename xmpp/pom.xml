@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>xmpp</artifactId>
 	<name>xmpp forwarding</name>
-        <parent>
-                <groupId>com.kudrevatykh.int</groupId>
-                <artifactId>examples</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <relativePath>../pom.xml</relativePath>
-        </parent>
+	<parent>
+		<groupId>com.kudrevatykh.int</groupId>
+		<artifactId>examples</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 	<properties>
 	</properties>
 	<dependencies>

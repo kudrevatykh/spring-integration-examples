@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>bash</artifactId>
 	<name>bash.im abyss rss</name>
-        <parent>
-                <groupId>com.kudrevatykh.int</groupId>
-                <artifactId>examples</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <relativePath>../pom.xml</relativePath>
-        </parent>
+	<parent>
+		<groupId>com.kudrevatykh.int</groupId>
+		<artifactId>examples</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 	<properties>
 		<jsoup.version>1.7.3</jsoup.version>
 		<derby.version>10.10.2.0</derby.version>

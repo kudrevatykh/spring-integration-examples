@@ -5,7 +5,6 @@ import java.util.TimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +20,7 @@ import org.springframework.integration.config.EnableIntegration;
 public class Main {
 
 	public static void main(String... args) {
-		ApplicationContext ctx = SpringApplication.run(Main.class, args);
+		SpringApplication.run(Main.class, args);
 	}
 	
 	@Bean

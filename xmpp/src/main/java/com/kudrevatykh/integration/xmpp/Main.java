@@ -6,7 +6,6 @@ import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.XMPPException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,7 @@ import org.springframework.util.ReflectionUtils;
 public class Main {
 	
 	public static void main(String... args) {
-		ApplicationContext ctx = SpringApplication.run(Main.class, args);
+		SpringApplication.run(Main.class, args);
 	}
 	
 	  @Bean(name="server2.conn")
